@@ -1,8 +1,21 @@
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
+#include <cstdio>
 #include <iostream>
 
+using namespace std;
+
+constexpr int kWindowWidth{800};
+constexpr int kWindowHeight{600};
+constexpr float kCellSize{32};
+
 int main(int argc, char *argv[]) {
+
+  // std::cout.setf(std::ios::unitbuf);
+
+  cout << "Begin!" << endl;
+
   // Initialize SDL
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError()
@@ -11,7 +24,8 @@ int main(int argc, char *argv[]) {
   }
 
   // Create window
-  SDL_Window *window = SDL_CreateWindow("SDL3 Window", 640, 480, 0);
+  SDL_Window *window =
+      SDL_CreateWindow("SDL3 Window", kWindowWidth, kWindowHeight, 0);
   if (!window) {
     std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError()
               << std::endl;
@@ -29,6 +43,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  // Enable vsync
+  SDL_SetRenderVSync(renderer, 1);
+
   // Main loop flag
   bool quit = false;
 
@@ -37,6 +54,7 @@ int main(int argc, char *argv[]) {
 
   // Main loop
   while (!quit) {
+
     // Handle events on queue
     while (SDL_PollEvent(&e) != 0) {
       // User requests quit
@@ -46,13 +64,22 @@ int main(int argc, char *argv[]) {
     }
 
     // Clear screen
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Draw a white rectangle
-    SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-    SDL_FRect rect = {220, 140, 200, 200};
-    SDL_RenderFillRect(renderer, &rect);
+    // Draw the grid
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    int w = 64;
+    int h = 64;
+    for (int x = 0; x < w; x++) {
+      SDL_FRect rect = {x * kCellSize, 0, 1, h * kCellSize};
+      SDL_RenderFillRect(renderer, &rect);
+      for (int y = 0; y < h; y++) {
+        // Draw horizontal lines
+        SDL_FRect rect = {0, y * kCellSize, w * kCellSize, 1};
+        SDL_RenderFillRect(renderer, &rect);
+      }
+    }
 
     // Update screen
     SDL_RenderPresent(renderer);
