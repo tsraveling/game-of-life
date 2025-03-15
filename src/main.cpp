@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <iostream>
 
+#include "drawing/Drawing.h"
+
 using namespace std;
 
 constexpr int kWindowWidth{800};
@@ -52,6 +54,9 @@ int main(int argc, char *argv[]) {
   // Event handler
   SDL_Event e;
 
+  // Set up the drawer
+  auto draw = new Draw(renderer);
+
   // Main loop
   while (!quit) {
 
@@ -68,7 +73,7 @@ int main(int argc, char *argv[]) {
     SDL_RenderClear(renderer);
 
     // Draw the grid
-    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    draw->set_color(Colors::BLACK);
     int w = 64;
     int h = 64;
     for (int x = 0; x < w; x++) {
