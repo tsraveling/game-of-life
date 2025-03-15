@@ -73,16 +73,13 @@ int main(int argc, char *argv[]) {
     SDL_RenderClear(renderer);
 
     // Draw the grid
-    draw->set_color(Colors::BLACK);
+    draw->set_color(Colors::GRAY);
     int w = 64;
     int h = 64;
     for (int x = 0; x < w; x++) {
-      SDL_FRect rect = {x * kCellSize, 0, 1, h * kCellSize};
-      SDL_RenderFillRect(renderer, &rect);
+      draw->rect(x * kCellSize, 0, 1, h * kCellSize);
       for (int y = 0; y < h; y++) {
-        // Draw horizontal lines
-        SDL_FRect rect = {0, y * kCellSize, w * kCellSize, 1};
-        SDL_RenderFillRect(renderer, &rect);
+        draw->rect(0, y * kCellSize, w * kCellSize, 1);
       }
     }
 
