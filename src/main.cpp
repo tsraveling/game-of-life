@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "drawing/Drawing.h"
+#include "logging/Logger.h"
 
 using namespace std;
 
@@ -56,6 +57,9 @@ int main(int argc, char *argv[]) {
 
   // Set up the drawer
   auto draw = new Draw(renderer);
+  auto logger = new Logger();
+
+  logger->log("Up and running ...");
 
   // Main loop
   while (!quit) {
