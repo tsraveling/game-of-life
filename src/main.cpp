@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "drawing/Drawing.h"
+#include "input/Mouse.h"
 #include "logging/Logger.h"
 
 using namespace std;
@@ -58,6 +59,7 @@ int main(int argc, char *argv[]) {
   // Set up the drawer
   auto draw = new Draw(renderer);
   auto logger = new Logger();
+  auto mouse = new Mouse();
 
   logger->log("Up and running ...");
 
@@ -76,6 +78,9 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+    // Handle input
+    mouse->tick();
+
     // Draw the grid
     draw->set_color(Colors::GRAY);
     int w = 64;
@@ -86,6 +91,18 @@ int main(int argc, char *argv[]) {
         draw->rect(0, y * kCellSize, w * kCellSize, 1);
       }
     }
+
+    // Get the position
+    int mox = mouse->mx() / kCellSize;
+    int moy = mouse->my() / kCellSize;
+    if (mouse->down()) {
+
+      draw->set_color(0, 255, 0);
+    } else {
+
+      draw->set_color(Colors::RED);
+    }
+    draw->rect(mox * kCellSize, moy * kCellSize, kCellSize, kCellSize);
 
     // Update screen
     SDL_RenderPresent(renderer);

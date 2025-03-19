@@ -1,4 +1,5 @@
 #include "Drawing.h"
+#include <SDL3/SDL_render.h>
 
 namespace Colors {
 const Color BLACK{0, 0, 0, 255};
@@ -14,4 +15,13 @@ void Draw::rect(float x, float y, float w, float h) {
 
 void Draw::set_color(const Color &color) {
   SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}
+
+void Draw::set_color(unsigned char r, unsigned char g, unsigned char b) {
+  SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+}
+void Draw::set_color(unsigned char r, unsigned char g, unsigned char b,
+                     unsigned char a) {
+
+  SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }

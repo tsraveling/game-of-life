@@ -34,6 +34,9 @@ public:
    * @param color the current color
    */
   void set_color(const Color &color);
+  void set_color(unsigned char r, unsigned char g, unsigned char b);
+  void set_color(unsigned char r, unsigned char g, unsigned char b,
+                 unsigned char a);
 
   Draw(SDL_Renderer *r) : renderer{r} {}
 };
