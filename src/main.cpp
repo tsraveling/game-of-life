@@ -96,10 +96,8 @@ int main(int argc, char *argv[]) {
     int mox = mouse->mx() / kCellSize;
     int moy = mouse->my() / kCellSize;
     if (mouse->down()) {
-
       draw->set_color(0, 255, 0);
     } else {
-
       draw->set_color(Colors::RED);
     }
     draw->rect(mox * kCellSize, moy * kCellSize, kCellSize, kCellSize);
@@ -108,7 +106,7 @@ int main(int argc, char *argv[]) {
     SDL_RenderPresent(renderer);
   }
 
-  // Cleanup
+  // SDL Cleanup
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
