@@ -6,6 +6,12 @@ bool Grid::at(int x, int y) const { return map[y * w + x]; }
 // Set a given cell
 void Grid::set(int x, int y, bool val) { map[y * w + x] = val; }
 
+// Toggle a given cell
+void Grid::toggle(int x, int y) {
+  int i = y * w + x;
+  map[i] = !map[i];
+}
+
 // Check an offset from a given index, and handle wrapping
 bool Grid::check(int at_x, int at_y, int x, int y) {
   int tar_x = at_x - x;
@@ -65,7 +71,7 @@ void Grid::tick() {
   std::vector<int> to_toggle;
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
-      bool index = y * w + x;
+      int index = y * w + x;
       bool alive = at(x, y);
       int neighbors = count_neighbors(x, y);
       if (alive) {

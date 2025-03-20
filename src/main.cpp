@@ -1,10 +1,13 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_video.h>
 #include <cstdio>
 #include <iostream>
 
 #include "drawing/Drawing.h"
+#include "entities/Grid.h"
 #include "input/Mouse.h"
 #include "logging/Logger.h"
 
@@ -63,7 +66,12 @@ int main(int argc, char *argv[]) {
 
   logger->log("Up and running ...");
 
-  bool grid[64][64];
+  auto grid = new Grid(64, 64);
+
+  int ticks_per_second = 10;
+  int tick_limit = 1000 / ticks_per_second;
+  Uint64 last_tick = SDL_GetTicks();
+  bool paused = true;
 
   // Main loop
   while (!quit) {
@@ -76,20 +84,30 @@ int main(int argc, char *argv[]) {
       }
     }
 
+    // Do logic
+    if (!paused && SDL_GetTicks() - last_tick >= tick_limit) {
+      last_tick = SDL_GetTicks();
+      grid->tick();
+    }
+
     // Clear screen
-    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    if (paused) {
+      SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    } else {
+
+      SDL_SetRenderDrawColor(renderer, 64, 128, 64, 255);
+    }
     SDL_RenderClear(renderer);
 
     // Handle input
     mouse->tick();
 
     // Draw the grid
-    draw->set_color(Colors::GRAY);
     int w = 64;
     int h = 64;
     for (int x = 0; x < w; x++) {
       for (int y = 0; y < h; y++) {
-        if (grid[x][y]) {
+        if (grid->at(x, y)) {
           draw->set_color(Colors::RED);
         } else {
           draw->set_color(Colors::BLACK);
@@ -109,7 +127,12 @@ int main(int argc, char *argv[]) {
     draw->rect((mox + 1) * kCellSize, moy * kCellSize, 1, kCellSize);
 
     if (mouse->clicked() && mox <= 64 && moy <= 64) {
-      grid[mox][moy] = !grid[mox][moy];
+      grid->toggle(mox, moy);
+    }
+
+    // Handle pause / unpause
+    if (mouse->clicked(RIGHT)) {
+      paused = !paused;
     }
 
     // Update screen

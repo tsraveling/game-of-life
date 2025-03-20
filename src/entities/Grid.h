@@ -50,6 +50,12 @@ public:
   void set(int x, int y, bool val);
 
   /**
+   * Toggles a given cell
+   * @param x,y coordinates
+   */
+  void toggle(int x, int y);
+
+  /**
    * Play the game of life
    */
   void tick();

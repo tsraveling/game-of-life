@@ -39,10 +39,10 @@ bool Mouse::down(BTN btn) {
 bool Mouse::clicked(BTN btn) {
   switch (btn) {
   case LEFT:
-    return last_left && !left;
+    return left && !last_left;
   case MIDDLE:
-    return last_middle && !middle;
+    return middle && !last_middle;
   case RIGHT:
-    return last_right && !right;
+    return right && !last_right;
   }
 }
