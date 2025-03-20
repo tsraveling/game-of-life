@@ -10,8 +10,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
 
-# Find SDL3
-# find_package(SDL3 REQUIRED)
+# Add vendor subdirectory, which includes the SDL3 library
 add_subdirectory(vendor)
 
 # Automatically include all source files in the src directory
@@ -20,8 +19,7 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 # Add executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Link SDL3
-#target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+# Link vendor libraries to target 
 target_link_libraries(${PROJECT_NAME} PRIVATE vendor)
 
 # Copy SDL3 libraries to the build directory (if needed)
