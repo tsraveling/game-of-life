@@ -11,7 +11,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
 
 # Find SDL3
-find_package(SDL3 REQUIRED)
+# find_package(SDL3 REQUIRED)
+add_subdirectory(vendor)
 
 # Automatically include all source files in the src directory
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -20,7 +21,8 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Link SDL3
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+#target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+target_link_libraries(${PROJECT_NAME} PRIVATE vendor)
 
 # Copy SDL3 libraries to the build directory (if needed)
 if(APPLE)
