@@ -63,6 +63,8 @@ int main(int argc, char *argv[]) {
 
   logger->log("Up and running ...");
 
+  bool grid[64][64];
+
   // Main loop
   while (!quit) {
 
@@ -75,7 +77,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Clear screen
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
     SDL_RenderClear(renderer);
 
     // Handle input
@@ -86,21 +88,29 @@ int main(int argc, char *argv[]) {
     int w = 64;
     int h = 64;
     for (int x = 0; x < w; x++) {
-      draw->rect(x * kCellSize, 0, 1, h * kCellSize);
       for (int y = 0; y < h; y++) {
-        draw->rect(0, y * kCellSize, w * kCellSize, 1);
+        if (grid[x][y]) {
+          draw->set_color(Colors::RED);
+        } else {
+          draw->set_color(Colors::BLACK);
+        }
+        draw->rect((x * kCellSize) + 1, (y * kCellSize) + 1, kCellSize - 2,
+                   kCellSize - 2);
       }
     }
 
     // Get the position
     int mox = mouse->mx() / kCellSize;
     int moy = mouse->my() / kCellSize;
-    if (mouse->down()) {
-      draw->set_color(0, 255, 0);
-    } else {
-      draw->set_color(Colors::RED);
+    draw->set_color(Colors::WHITE);
+    draw->rect(mox * kCellSize, moy * kCellSize, kCellSize, 1);
+    draw->rect(mox * kCellSize, (moy + 1) * kCellSize, kCellSize, 1);
+    draw->rect(mox * kCellSize, moy * kCellSize, 1, kCellSize);
+    draw->rect((mox + 1) * kCellSize, moy * kCellSize, 1, kCellSize);
+
+    if (mouse->clicked() && mox <= 64 && moy <= 64) {
+      grid[mox][moy] = !grid[mox][moy];
     }
-    draw->rect(mox * kCellSize, moy * kCellSize, kCellSize, kCellSize);
 
     // Update screen
     SDL_RenderPresent(renderer);
