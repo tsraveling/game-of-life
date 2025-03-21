@@ -8,6 +8,7 @@
 #include <string>
 
 #include "SDL3/SDL_events.h"
+#include "SDL3/SDL_keycode.h"
 #include "drawing/Drawing.h"
 #include "entities/Grid.h"
 #include "input/Keyboard.h"
@@ -18,7 +19,6 @@ using namespace std;
 
 constexpr int kWindowWidth{800};
 constexpr int kWindowHeight{600};
-constexpr float kCellSize{32};
 
 int main(int argc, char *argv[]) {
 
@@ -75,6 +75,10 @@ int main(int argc, char *argv[]) {
   int ticks_per_second = 4;
   bool paused = true;
 
+  float cell_size = 32;
+  const float MIN_CELL_SIZE = 8;
+  const float MAX_CELL_SIZE = 48;
+
   const float CAM_SPEED = 320.0;
 
   float cam_x = 0;
@@ -103,6 +107,24 @@ int main(int argc, char *argv[]) {
       if (e.type == SDL_EVENT_KEY_DOWN) {
         if (e.key.key == SDLK_SPACE) {
           paused = !paused;
+        }
+        switch (e.key.key) {
+        case SDLK_MINUS:
+          cell_size = cell_size > MIN_CELL_SIZE ? cell_size - 2 : MIN_CELL_SIZE;
+          break;
+        case SDLK_EQUALS:
+          cell_size = cell_size < MAX_CELL_SIZE ? cell_size + 2 : MAX_CELL_SIZE;
+          break;
+        case SDLK_LEFTBRACKET:
+          ticks_per_second = ticks_per_second > 1 ? ticks_per_second - 1 : 1;
+          break;
+        case SDLK_RIGHTBRACKET:
+          ticks_per_second = ticks_per_second < 60 ? ticks_per_second + 1 : 60;
+          break;
+        case SDLK_SPACE:
+          paused = !paused;
+          break;
+          // case SDLK_MINUS:
         }
       }
 
@@ -148,21 +170,21 @@ int main(int argc, char *argv[]) {
         } else {
           draw->set_color(Colors::BLACK);
         }
-        draw->rect((x * kCellSize) + 1 - cam_x, (y * kCellSize) + 1 - cam_y,
-                   kCellSize - 2, kCellSize - 2);
+        draw->rect((x * cell_size) + 1 - cam_x, (y * cell_size) + 1 - cam_y,
+                   cell_size - 2, cell_size - 2);
       }
     }
 
     // Get the position
-    int mox = (mouse->mx() + cam_x) / kCellSize;
-    int moy = (mouse->my() + cam_y) / kCellSize;
+    int mox = (mouse->mx() + cam_x) / cell_size;
+    int moy = (mouse->my() + cam_y) / cell_size;
     draw->set_color(Colors::WHITE);
-    draw->rect(mox * kCellSize - cam_x, moy * kCellSize - cam_y, kCellSize, 1);
-    draw->rect(mox * kCellSize - cam_x, (moy + 1) * kCellSize - cam_y,
-               kCellSize, 1);
-    draw->rect(mox * kCellSize - cam_x, moy * kCellSize - cam_y, 1, kCellSize);
-    draw->rect((mox + 1) * kCellSize - cam_x, moy * kCellSize - cam_y, 1,
-               kCellSize);
+    draw->rect(mox * cell_size - cam_x, moy * cell_size - cam_y, cell_size, 1);
+    draw->rect(mox * cell_size - cam_x, (moy + 1) * cell_size - cam_y,
+               cell_size, 1);
+    draw->rect(mox * cell_size - cam_x, moy * cell_size - cam_y, 1, cell_size);
+    draw->rect((mox + 1) * cell_size - cam_x, moy * cell_size - cam_y, 1,
+               cell_size);
 
     if (mouse->clicked() && mox <= 64 && moy <= 64) {
       grid->toggle(mox, moy);
@@ -176,10 +198,9 @@ int main(int argc, char *argv[]) {
     // GUI
     draw->dbg_print(5, 5, "SPEED: %d", ticks_per_second);
     draw->dbg_print(5, 25, "CAM: %.1f, %.1f", cam_x, cam_y);
+    draw->dbg_print(5, 45, "CELL_SIZE: %.1f", cell_size);
     if (paused)
-      draw->dbg_print(5, 45, "PAUSED");
-
-    draw->dbg_print(200, 25, "MOVE: %.3f, %.3f", move.x, move.y);
+      draw->dbg_print(300, 5, "PAUSED");
 
     // Update screen
     SDL_RenderPresent(renderer);
