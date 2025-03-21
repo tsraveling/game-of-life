@@ -5,9 +5,12 @@
 #include <SDL3/SDL_video.h>
 #include <cstdio>
 #include <iostream>
+#include <string>
 
+#include "SDL3/SDL_events.h"
 #include "drawing/Drawing.h"
 #include "entities/Grid.h"
+#include "input/Keyboard.h"
 #include "input/Mouse.h"
 #include "logging/Logger.h"
 
@@ -63,6 +66,7 @@ int main(int argc, char *argv[]) {
   auto draw = new Draw(renderer);
   auto logger = new Logger();
   auto mouse = new Mouse();
+  auto keyboard = new Keyboard();
 
   logger->log("Up and running ...");
 
@@ -78,6 +82,16 @@ int main(int argc, char *argv[]) {
 
     // Handle events on queue
     while (SDL_PollEvent(&e) != 0) {
+
+      // Pass the event to the keyboard handler
+      keyboard->feed(e);
+
+      if (e.type == SDL_EVENT_KEY_DOWN) {
+        if (e.key.key == SDLK_SPACE) {
+          paused = !paused;
+        }
+      }
+
       // User requests quit
       if (e.type == SDL_EVENT_QUIT) {
         quit = true;

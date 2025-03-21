@@ -14,7 +14,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
 add_subdirectory(vendor)
 
 # Automatically include all source files in the src directory
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 
 # Add executable
 add_executable(${PROJECT_NAME} ${SOURCES})
