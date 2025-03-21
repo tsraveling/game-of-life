@@ -72,13 +72,27 @@ int main(int argc, char *argv[]) {
 
   auto grid = new Grid(64, 64);
 
-  int ticks_per_second = 10;
-  int tick_limit = 1000 / ticks_per_second;
-  Uint64 last_tick = SDL_GetTicks();
+  int ticks_per_second = 4;
   bool paused = true;
+
+  const float CAM_SPEED = 320.0;
+
+  float cam_x = 0;
+  float cam_y = 0;
+  float last_ms = 0;
+
+  Uint64 moment_last = SDL_GetPerformanceCounter();
+  Uint64 frequency = SDL_GetPerformanceFrequency();
+  double delta = 0;
+  double delta_counter = 0;
 
   // Main loop
   while (!quit) {
+
+    // Get delta
+    Uint64 moment_now = SDL_GetPerformanceCounter();
+    delta = (double)(moment_now - moment_last) / frequency;
+    moment_last = moment_now;
 
     // Handle events on queue
     while (SDL_PollEvent(&e) != 0) {
@@ -99,10 +113,18 @@ int main(int argc, char *argv[]) {
     }
 
     // Do logic
-    if (!paused && SDL_GetTicks() - last_tick >= tick_limit) {
-      last_tick = SDL_GetTicks();
-      grid->tick();
+    if (!paused) {
+      delta_counter += delta;
+      if (delta_counter >= 1.0 / ticks_per_second) {
+        delta_counter = 0;
+        grid->tick();
+      }
     }
+
+    // Handle camera
+    auto move = keyboard->get_move();
+    cam_x += move.x * delta * CAM_SPEED;
+    cam_y += move.y * delta * CAM_SPEED;
 
     // Clear screen
     if (paused) {
@@ -126,19 +148,21 @@ int main(int argc, char *argv[]) {
         } else {
           draw->set_color(Colors::BLACK);
         }
-        draw->rect((x * kCellSize) + 1, (y * kCellSize) + 1, kCellSize - 2,
-                   kCellSize - 2);
+        draw->rect((x * kCellSize) + 1 - cam_x, (y * kCellSize) + 1 - cam_y,
+                   kCellSize - 2, kCellSize - 2);
       }
     }
 
     // Get the position
-    int mox = mouse->mx() / kCellSize;
-    int moy = mouse->my() / kCellSize;
+    int mox = (mouse->mx() + cam_x) / kCellSize;
+    int moy = (mouse->my() + cam_y) / kCellSize;
     draw->set_color(Colors::WHITE);
-    draw->rect(mox * kCellSize, moy * kCellSize, kCellSize, 1);
-    draw->rect(mox * kCellSize, (moy + 1) * kCellSize, kCellSize, 1);
-    draw->rect(mox * kCellSize, moy * kCellSize, 1, kCellSize);
-    draw->rect((mox + 1) * kCellSize, moy * kCellSize, 1, kCellSize);
+    draw->rect(mox * kCellSize - cam_x, moy * kCellSize - cam_y, kCellSize, 1);
+    draw->rect(mox * kCellSize - cam_x, (moy + 1) * kCellSize - cam_y,
+               kCellSize, 1);
+    draw->rect(mox * kCellSize - cam_x, moy * kCellSize - cam_y, 1, kCellSize);
+    draw->rect((mox + 1) * kCellSize - cam_x, moy * kCellSize - cam_y, 1,
+               kCellSize);
 
     if (mouse->clicked() && mox <= 64 && moy <= 64) {
       grid->toggle(mox, moy);
@@ -148,6 +172,14 @@ int main(int argc, char *argv[]) {
     if (mouse->clicked(RIGHT)) {
       paused = !paused;
     }
+
+    // GUI
+    draw->dbg_print(5, 5, "SPEED: %d", ticks_per_second);
+    draw->dbg_print(5, 25, "CAM: %.1f, %.1f", cam_x, cam_y);
+    if (paused)
+      draw->dbg_print(5, 45, "PAUSED");
+
+    draw->dbg_print(200, 25, "MOVE: %.3f, %.3f", move.x, move.y);
 
     // Update screen
     SDL_RenderPresent(renderer);

@@ -38,6 +38,14 @@ public:
   void set_color(unsigned char r, unsigned char g, unsigned char b,
                  unsigned char a);
 
+  /**
+   * Prints some debug text on the screen
+   * @param x,y coordinates
+   * @param string Use this as a snprintf, e.g. `"Something %.2f", float_value`.
+   * 128 char limit.
+   */
+  void dbg_print(float x, float y, const char *format, ...);
+
   Draw(SDL_Renderer *r) : renderer{r} {}
 };
 

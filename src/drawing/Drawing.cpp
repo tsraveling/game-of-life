@@ -1,5 +1,6 @@
 #include "Drawing.h"
 #include <SDL3/SDL_render.h>
+#include <cstdarg>
 
 namespace Colors {
 const Color BLACK{0, 0, 0, 255};
@@ -24,4 +25,13 @@ void Draw::set_color(unsigned char r, unsigned char g, unsigned char b,
                      unsigned char a) {
 
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
+}
+
+void Draw::dbg_print(float x, float y, const char *format, ...) {
+  char buffer[128];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(buffer, sizeof(buffer), format, args);
+  va_end(args);
+  SDL_RenderDebugText(renderer, x, y, buffer);
 }
