@@ -1,10 +1,18 @@
 #include "Grid.h"
+#include "SDL3/SDL_stdinc.h"
 
 // Return the cell at given coordinate
 bool Grid::at(int x, int y) const { return map[y * w + x]; }
 
 // Set a given cell
 void Grid::set(int x, int y, bool val) { map[y * w + x] = val; }
+
+// Set a random cell to alive
+void Grid::set_rand() {
+  int rand_x = SDL_rand(w);
+  int rand_y = SDL_rand(h);
+  set(rand_x, rand_y, true);
+}
 
 // Toggle a given cell
 void Grid::toggle(int x, int y) {

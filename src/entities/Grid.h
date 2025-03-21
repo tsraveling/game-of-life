@@ -50,6 +50,11 @@ public:
   void set(int x, int y, bool val);
 
   /**
+   * Sets one random cell alive
+   */
+  void set_rand();
+
+  /**
    * Toggles a given cell
    * @param x,y coordinates
    */

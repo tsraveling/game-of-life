@@ -79,6 +79,8 @@ int main(int argc, char *argv[]) {
   const float MIN_CELL_SIZE = 8;
   const float MAX_CELL_SIZE = 48;
 
+  const int SEED_AMOUNT = 50;
+
   const float CAM_SPEED = 320.0;
 
   float cam_x = 0;
@@ -105,9 +107,6 @@ int main(int argc, char *argv[]) {
       keyboard->feed(e);
 
       if (e.type == SDL_EVENT_KEY_DOWN) {
-        if (e.key.key == SDLK_SPACE) {
-          paused = !paused;
-        }
         switch (e.key.key) {
         case SDLK_MINUS:
           cell_size = cell_size > MIN_CELL_SIZE ? cell_size - 2 : MIN_CELL_SIZE;
@@ -121,10 +120,14 @@ int main(int argc, char *argv[]) {
         case SDLK_RIGHTBRACKET:
           ticks_per_second = ticks_per_second < 60 ? ticks_per_second + 1 : 60;
           break;
+        case SDLK_N:
+          for (int i = 0; i < SEED_AMOUNT; i++) {
+            grid->set_rand();
+          }
+          break;
         case SDLK_SPACE:
           paused = !paused;
           break;
-          // case SDLK_MINUS:
         }
       }
 
@@ -196,11 +199,11 @@ int main(int argc, char *argv[]) {
     }
 
     // GUI
-    draw->dbg_print(5, 5, "SPEED: %d", ticks_per_second);
-    draw->dbg_print(5, 25, "CAM: %.1f, %.1f", cam_x, cam_y);
-    draw->dbg_print(5, 45, "CELL_SIZE: %.1f", cell_size);
+    draw->dbg_print(5, 5, "SPEED: %d ([] to change)", ticks_per_second);
+    draw->dbg_print(5, 25, "CAM: %.1f, %.1f (WASD to scroll)", cam_x, cam_y);
+    draw->dbg_print(5, 45, "CELL_SIZE: %.1f (-+ to zoom)", cell_size);
     if (paused)
-      draw->dbg_print(300, 5, "PAUSED");
+      draw->dbg_print(300, 5, "SPACE TO UNPAUSE");
 
     // Update screen
     SDL_RenderPresent(renderer);
